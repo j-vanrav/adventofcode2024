@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(calcDistance(list1, list2))
+	fmt.Println(calcSimilarity(list1, list2))
 }
 
 func parseFile(file *os.File) (numbers1 []int, numbers2 []int, err error) {
@@ -54,6 +54,32 @@ func calcDistance(list1 []int, list2 []int) (sum int) {
 	})
 	for i := range list1 {
 		sum += int(math.Abs((float64(list2[i]) - float64(list1[i]))))
+	}
+	return
+}
+
+func calcSimilarity(list1 []int, list2 []int) (sum int) {
+	sort.Slice(list1, func(i, j int) bool {
+		return list1[i] < list1[j]
+	})
+	sort.Slice(list2, func(i, j int) bool {
+		return list2[i] < list2[j]
+	})
+	for _, i := range list1 {
+		var numSimilar int
+		for _, j := range list2 {
+			if i > j {
+				continue
+			}
+			if i == j {
+				numSimilar++
+				continue
+			}
+			if i < j {
+				break
+			}
+		}
+		sum += (i * numSimilar)
 	}
 	return
 }
