@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -19,7 +21,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(list1, list2)
+	sort.Slice(list1, func(i, j int) bool {
+		return list1[i] < list1[j]
+	})
+	sort.Slice(list2, func(i, j int) bool {
+		return list2[i] < list2[j]
+	})
+	var sum int
+	for i := range list1 {
+		sum += int(math.Abs((float64(list2[i]) - float64(list1[i]))))
+	}
+	fmt.Println(sum)
 }
 
 func parseFile(file *os.File) (numbers1 []int, numbers2 []int, err error) {
