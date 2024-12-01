@@ -21,6 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(calcDistance(list1, list2))
 	fmt.Println(calcSimilarity(list1, list2))
 }
 
