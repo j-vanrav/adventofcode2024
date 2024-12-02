@@ -1,0 +1,10 @@
+cabal-version:      3.0
+name:               day1
+version:            0.1.0.0
+build-type:         Simple
+
+executable day1
+    main-is:          Main.hs
+    build-depends:    base ^>=4.17 && <5,
+                       split
+    default-language: GHC2021
