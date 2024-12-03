@@ -7,7 +7,7 @@ import Text.Read (readMaybe)
 
 main :: IO ()
 main = do
-  content <- readFile "../input"
+  content <- readFile "./day1/input"
   let rows = parseFile content
       leftCol = sort (map fst rows)
       rightCol = sort (map snd rows)

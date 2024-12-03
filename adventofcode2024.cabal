@@ -1,0 +1,16 @@
+cabal-version:      3.0
+name:               adventofcode2024
+version:            0.1.0.0
+build-type:         Simple
+
+executable day1
+    main-is:          Main.hs
+    hs-source-dirs:   day1/haskell
+    build-depends:    base >=4.14 && <5
+    default-language: GHC2021
+
+executable day2
+    main-is:          Main.hs
+    hs-source-dirs:   day2/haskell
+    build-depends:    base >=4.14 && <5
+    default-language: GHC2021
