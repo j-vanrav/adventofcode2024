@@ -16,5 +16,5 @@ My solutions for [advent of code](https://adventofcode.com/) 2024
 | -------------------------------- | ---------- | -------- | ----------------- |
 | Day 1: Part 1 (distance)         | NlogN :: N | N :: 1   | N :: 1            |
 | Day 1: Part 2 (similarity)       | N^2 :: N   | N^2 :: 1 | NlogN :: 1        |
-| Day 2: Part 1 (safety)           | NM :: NM   |          | NM :: 1           |
+| Day 2: Part 1 (safety)           | NM :: NM   | NM :: 1  | NM :: 1           |
 | Day 2: Part 1 (dampening)        | NM :: NM   |          | NM :: 1           |
