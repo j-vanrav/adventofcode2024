@@ -21,12 +21,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(calcSafeLines(numbers))
+	fmt.Println(calcSafeLines(numbers, false))
+	fmt.Println(calcSafeLines(numbers, true))
 }
 
-func calcSafeLines(numbers [][]int) (safeCount int) {
+func calcSafeLines(numbers [][]int, isDampen bool) (safeCount int) {
 	for _, v := range numbers {
-		if isIncreasingSafely(v) {
+		if isIncreasingSafely(v, isDampen) {
 			safeCount++
 		}
 	}
@@ -55,7 +56,7 @@ func parseFile(file *os.File) (numbers [][]int, err error) {
 	return
 }
 
-func isIncreasingSafely(row []int) bool {
+func isIncreasingSafely(row []int, isDampen bool) bool {
 	isIncreasing := false
 	isDecreasing := false
 	for i, v := range row {
@@ -63,7 +64,11 @@ func isIncreasingSafely(row []int) bool {
 			continue
 		}
 		if !isSafeInterval(row[i-1], v) {
-			return false
+			if !isDampen {
+				return false
+			} else {
+				return (i >= 2 && isIncreasingSafely(removeElement(row, i-2), false)) || isIncreasingSafely(removeElement(row, i-1), false) || isIncreasingSafely(removeElement(row, i), false)
+			}
 		}
 		if row[i-1] < v {
 			isIncreasing = true
@@ -72,7 +77,11 @@ func isIncreasingSafely(row []int) bool {
 			isDecreasing = true
 		}
 		if isIncreasing && isDecreasing {
-			return false
+			if !isDampen {
+				return false
+			} else {
+				return (i >= 2 && isIncreasingSafely(removeElement(row, i-2), false)) || isIncreasingSafely(removeElement(row, i-1), false) || isIncreasingSafely(removeElement(row, i), false)
+			}
 		}
 	}
 	return true
@@ -84,4 +93,10 @@ func isSafeInterval(n1 int, n2 int) bool {
 
 func absInt(v int) int {
 	return int(math.Abs(float64(v)))
+}
+
+func removeElement(slice []int, i int) []int {
+	tmp := make([]int, len(slice))
+	copy(tmp, slice)
+	return append(tmp[:i], tmp[i+1:]...)
 }
