@@ -42,12 +42,6 @@ isTrebleSafe (x, y, z) = isPairSafe (x, y) && isPairSafe (y, z) && (isAscending 
 isDampenableAt :: [Int] -> Int -> Bool
 isDampenableAt as i = any isSafe [deleteAt as (i - 1), deleteAt as i, deleteAt as (i + 1)]
 
-(!?) :: [a] -> Int -> Maybe a
-xs !? i
-  | i < 0 = Nothing
-  | i >= length xs = Nothing
-  | otherwise = Just (xs !! i)
-
 ints :: String -> Maybe [Int]
 ints = mapM readMaybe . words
 
