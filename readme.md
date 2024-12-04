@@ -18,7 +18,7 @@ My solutions for [advent of code](https://adventofcode.com/) 2024
 | Day 1: Part 2 (similarity)       | N^2 :: N   | N^2 :: 1     | NlogN :: 1        |
 | Day 2: Part 1 (safety)           | NM :: NM   | NM :: 1      | NM :: 1           |
 | Day 2: Part 2 (dampening)        | NM :: NM   | NM^3 :: NM^2 | NM :: 1           |
-| Day 3: Part 1 (corrupted)        | NM :: N    | ?            | ?                 |
-| Day 3: Part 2 (disabling)        |            | NM :: N      | ?                 |
-| Day 4: Part 1 (XMAS)             | ?          |              | ?                 |
-| Day 4: Part 2 (X-MAS)            | ?          |              | ?                 |
+| Day 3: Part 1 (corrupted)        | NM :: N    | ? :: ?       | ? :: ?            |
+| Day 3: Part 2 (disabling)        |            | NM :: N      | ? :: ?            |
+| Day 4: Part 1 (XMAS)             | ? :: ?     |              | ? :: ?            |
+| Day 4: Part 2 (X-MAS)            | ? :: ?     |              | ? :: ?            |
