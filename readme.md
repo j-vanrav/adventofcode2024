@@ -5,12 +5,12 @@ My solutions for [advent of code](https://adventofcode.com/) 2024
 ##### Go:
 
 1. Install Go
-2. Run like `go run ./day1/go/solution.go`
+2. Run like `go run ./day1/solution.go`
 
 ##### Haskell
 
 1. Install Haskell & Cabal
-2. Run like `cabal run day1` or `ghci ./day1/haskell/Main.hs` + `main`
+2. Run like `cabal run day1` or `ghci ./day1/solution.hs` + `main`
 
 | Time O() :: Space O() complexity | Go         | Haskell      | Theorised optimum |
 | -------------------------------- | ---------- | ------------ | ----------------- |
