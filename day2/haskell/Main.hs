@@ -16,10 +16,14 @@ isAdjacencySafe [] _ = True
 isAdjacencySafe [x] _ = True
 isAdjacencySafe [x, y] _ = isPairSafe (x, y)
 isAdjacencySafe [x, y, z] _ = isTrebleSafe (x, y, z)
-isAdjacencySafe (x : y : z) i = isAdjacencySafe (take 3 (drop i (x : y : z))) 0 && (((i + 3) > length (x : y : z)) || isAdjacencySafe (x : y : z) (i + 1))
+isAdjacencySafe (x : y : z) i = maybe True isTrebleSafe (toTreble (take 3 (drop i (x : y : z)))) && (((i + 3) > length (x : y : z)) || isAdjacencySafe (x : y : z) (i + 1))
 
 isPairSafe :: (Int, Int) -> Bool
 isPairSafe (x, y) = (x /= y) && (abs (y - x) <= 3)
+
+toTreble :: [Int] -> Maybe (Int, Int, Int)
+toTreble [x, y, z] = Just (x, y, z)
+toTreble _ = Nothing
 
 isTrebleSafe :: (Int, Int, Int) -> Bool
 isTrebleSafe (x, y, z) = isPairSafe (x, y) && isPairSafe (y, z) && (isAscending [x, y, z] || isDescending [x, y, z])
