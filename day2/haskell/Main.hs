@@ -9,15 +9,20 @@ main = do
   print (length (filter id (map isSafe rows)))
 
 isSafe :: [Int] -> Bool
-isSafe x = isAdjacencySafe x && (isAscending x || isDescending x)
+isSafe x = isAdjacencySafe x 0 && (isAscending x || isDescending x)
 
-isAdjacencySafe :: [Int] -> Bool
-isAdjacencySafe [x] = True
-isAdjacencySafe (x : y) = isPairSafe (x, head y) && isAdjacencySafe y
-isAdjacencySafe _ = True
+isAdjacencySafe :: [Int] -> Int -> Bool
+isAdjacencySafe [] _ = True
+isAdjacencySafe [x] _ = True
+isAdjacencySafe [x, y] _ = isPairSafe (x, y)
+isAdjacencySafe [x, y, z] _ = isTrebleSafe (x, y, z)
+isAdjacencySafe (x : y : z) i = isAdjacencySafe (take 3 (drop i (x : y : z))) 0 && (((i + 3) > length (x : y : z)) || isAdjacencySafe (x : y : z) (i + 1))
 
 isPairSafe :: (Int, Int) -> Bool
 isPairSafe (x, y) = (x /= y) && (abs (y - x) <= 3)
+
+isTrebleSafe :: (Int, Int, Int) -> Bool
+isTrebleSafe (x, y, z) = isPairSafe (x, y) && isPairSafe (y, z) && (isAscending [x, y, z] || isDescending [x, y, z])
 
 ints :: String -> Maybe [Int]
 ints = mapM readMaybe . words
@@ -27,3 +32,6 @@ isAscending x = sort x == x
 
 isDescending :: [Int] -> Bool
 isDescending x = sortBy (flip compare) x == x
+
+deleteAt :: [Int] -> Int -> [Int]
+deleteAt xs y = take y xs ++ drop 1 (drop y xs)
