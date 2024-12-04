@@ -1,3 +1,5 @@
+module Main where
+
 import Data.List (sort, sortBy)
 import Data.Maybe (fromMaybe, mapMaybe)
 import System.IO ()
