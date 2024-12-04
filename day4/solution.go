@@ -18,14 +18,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	count := 0
+	XMASCount := 0
+	CrossMAXCount := 0
 	for i := range table {
 		for j := range table[i] {
-			count += matchesFrom(table, i, j)
+			XMASCount += XMASMatchesFrom(table, i, j)
+			CrossMAXCount += CrossMASMatchesFrom(table, i, j)
 		}
 	}
 
-	fmt.Println(count)
+	fmt.Println(XMASCount, CrossMAXCount)
 }
 
 func parseFile(file *os.File) (table [][]string, err error) {
@@ -41,7 +43,7 @@ func parseFile(file *os.File) (table [][]string, err error) {
 	return
 }
 
-func matchesFrom(table [][]string, x int, y int) (matches int) {
+func XMASMatchesFrom(table [][]string, x int, y int) (matches int) {
 	if len(table) == 0 {
 		return
 	}
@@ -86,5 +88,35 @@ func matchesFrom(table [][]string, x int, y int) (matches int) {
 			matches++
 		}
 	}
+	return
+}
+
+func CrossMASMatchesFrom(table [][]string, x int, y int) (matches int) {
+	if len(table) == 0 {
+		return
+	}
+	if !(y-1 >= 0 && y+1 < len(table) && x+1 < len(table) && x-1 >= 0) {
+		return
+	}
+	C := table[x][y]
+
+	if C != "A" {
+		return
+	}
+
+	NE := table[x+1][y-1]
+	SE := table[x+1][y+1]
+	SW := table[x-1][y+1]
+	NW := table[x-1][y-1]
+
+	up := NW == "M" && NE == "M" && SW == "S" && SE == "S"
+	down := NW == "S" && NE == "S" && SW == "M" && SE == "M"
+	right := NW == "S" && NE == "M" && SW == "S" && SE == "M"
+	left := NW == "M" && NE == "S" && SW == "M" && SE == "S"
+
+	if up || down || left || right {
+		matches++
+	}
+
 	return
 }
