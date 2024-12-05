@@ -5,19 +5,19 @@ import Data.List.Split (splitOn)
 
 main = do
   content <- readFile "./day5/input"
-  let (rs, ps) = rulesAndPages . words $ content
-      (rsi, psi) = (map rules rs, map pages ps)
+  let (_rs, _ps) = rulesAndPages . words $ content
+      (rs, ps) = (map rules _rs, map pages _ps)
 
-  print (orderedSum rsi psi)
+  print (orderedSum rs ps)
 
 unordered :: [(Int, Int)] -> [[Int]] -> [[Int]]
-unordered rsi = filter (\p -> not (isOrdered p rsi))
+unordered rs = filter (\p -> not (isOrdered p rs))
 
 ordered :: [(Int, Int)] -> [[Int]] -> [[Int]]
-ordered rsi = filter (`isOrdered` rsi)
+ordered rs = filter (`isOrdered` rs)
 
 orderedSum :: [(Int, Int)] -> [[Int]] -> Int
-orderedSum rsi psi = sum (map middle (ordered rsi psi))
+orderedSum rs ps = sum (map middle (ordered rs ps))
 
 rulesAndPages :: [String] -> ([String], [String])
 rulesAndPages [x] = if '|' `elem` x then ([x], []) else ([], [x])
