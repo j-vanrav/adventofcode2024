@@ -7,10 +7,10 @@ import Data.Maybe (fromMaybe)
 import Debug.Trace (trace)
 
 main = do
-  content <- readFile "./day5/sample"
+  content <- readFile "./day5/input"
   let (_rs, _ps) = rulesAndPages . words $ content
       (rs, ps) = (map rules _rs, map pages _ps)
-
+  print (sumMiddles (ordered rs ps))
   print (sumMiddles (fromMaybe [] (mapM (\uo -> getReorder rs uo []) (unordered rs ps))))
 
 unordered :: [(Int, Int)] -> [[Int]] -> [[Int]]
