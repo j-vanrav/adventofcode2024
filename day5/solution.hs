@@ -10,8 +10,14 @@ main = do
 
   print (orderedSum rsi psi)
 
+unordered :: [(Int, Int)] -> [[Int]] -> [[Int]]
+unordered rsi = filter (\p -> not (isOrdered p rsi))
+
+ordered :: [(Int, Int)] -> [[Int]] -> [[Int]]
+ordered rsi = filter (`isOrdered` rsi)
+
 orderedSum :: [(Int, Int)] -> [[Int]] -> Int
-orderedSum rsi psi = sum (map (\p -> if isOrdered p rsi then last (fst (splitHalf p)) else 0) psi)
+orderedSum rsi psi = sum (map middle (ordered rsi psi))
 
 rulesAndPages :: [String] -> ([String], [String])
 rulesAndPages [x] = if '|' `elem` x then ([x], []) else ([], [x])
@@ -37,3 +43,6 @@ checkRules (x, y) ((a, b) : abs) = checkRules (x, y) [(a, b)] && checkRules (x, 
 
 splitHalf :: [a] -> ([a], [a])
 splitHalf l = splitAt ((length l + 1) `div` 2) l
+
+middle :: [a] -> a
+middle x = last (fst (splitHalf x))
