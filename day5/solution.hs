@@ -8,7 +8,10 @@ main = do
   let (rs, ps) = rulesAndPages . words $ content
       (rsi, psi) = (map rules rs, map pages ps)
 
-  print (sum (map (\p -> if isOrdered p rsi then last (fst (splitHalf p)) else 0) psi))
+  print (orderedSum rsi psi)
+
+orderedSum :: [(Int, Int)] -> [[Int]] -> Int
+orderedSum rsi psi = sum (map (\p -> if isOrdered p rsi then last (fst (splitHalf p)) else 0) psi)
 
 rulesAndPages :: [String] -> ([String], [String])
 rulesAndPages [x] = if '|' `elem` x then ([x], []) else ([], [x])
