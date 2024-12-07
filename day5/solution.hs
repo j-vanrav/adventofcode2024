@@ -3,7 +3,7 @@ module Main where
 import Data.Bifunctor (bimap)
 import Data.List (find, sortBy)
 import Data.List.Split (splitOn)
-import Data.Map (Map, adjust, fromList, insert, member)
+import Data.Map qualified as M (Map, adjust, empty, fromList, insert, lookup, member)
 import Data.Maybe (fromMaybe)
 import Debug.Trace (trace)
 
@@ -11,8 +11,11 @@ main = do
   content <- readFile "./day5/input"
   let (_rs, _ps) = rulesAndPages . words $ content
       (rs, ps) = (map rules _rs, map pages _ps)
-  print (sumMiddles (ordered rs ps))
-  print (sumMiddles (mapM (\uo -> makeOrdered rs uo []) (unordered rs ps)))
+      os = ordered rs ps
+      uos = unordered rs ps
+      uosReorderedMiddles = map (\uo -> traceVal (middle (makeOrdered (rulesMap rs M.empty) uo []))) uos
+  print (sumMiddles os)
+  print (sum uosReorderedMiddles)
 
 unordered :: [(Int, Int)] -> [[Int]] -> [[Int]]
 unordered rs = filter (\p -> not (isOrdered p rs))
@@ -20,28 +23,28 @@ unordered rs = filter (\p -> not (isOrdered p rs))
 ordered :: [(Int, Int)] -> [[Int]] -> [[Int]]
 ordered rs = filter (`isOrdered` rs)
 
-toMap :: (Ord k) => k -> a -> Map k a
-toMap i v = fromList [(i, v)]
+toMap :: (Ord k) => k -> a -> M.Map k a
+toMap i v = M.fromList [(i, v)]
 
-rulesMap :: [(Int, Int)] -> Map Int ([Int], [Int]) -> Map Int ([Int], [Int])
+rulesMap :: [(Int, Int)] -> M.Map Int ([Int], [Int]) -> M.Map Int ([Int], [Int])
 rulesMap [(r1, r2)] mp = do
-  let mp1 = if member r1 mp then adjust (\(l, r) -> (l, r ++ [r2])) r1 mp else insert r1 ([], [r2]) mp
-  let mp2 = if member r2 mp1 then adjust (\(l, r) -> (l ++ [r1], r)) r2 mp1 else insert r2 ([r1], []) mp1
+  let mp1 = if M.member r1 mp then M.adjust (\(l, r) -> (l, r ++ [r2])) r1 mp else M.insert r1 ([], [r2]) mp
+  let mp2 = if M.member r2 mp1 then M.adjust (\(l, r) -> (l ++ [r1], r)) r2 mp1 else M.insert r2 ([r1], []) mp1
   mp2
 rulesMap ((r1, r2) : rs) mp = do
   let mp1 = rulesMap [(r1, r2)] mp
   let mp2 = rulesMap rs mp1
   mp2
 
-makeOrdered :: [(Int, Int)] -> [Int] -> [Int] -> [Int]
+makeOrdered :: M.Map Int ([Int], [Int]) -> [Int] -> [Int] -> [Int]
 makeOrdered _ [] pgs = traceVal pgs
-makeOrdered rs pgsr pgs = makeOrdered rs (tail pgsr) (placeInOrder rs [] (head pgsr) pgs)
+makeOrdered mp pgsr pgs = makeOrdered mp (tail pgsr) (placeInOrder mp [] (head pgsr) pgs)
 
-placeInOrder :: [(Int, Int)] -> [Int] -> Int -> [Int] -> [Int]
-placeInOrder rs lpgs p rpgs = if isOrdered (lpgs ++ [p] ++ rpgs) rs then lpgs ++ [p] ++ rpgs else placeInOrder rs (lpgs ++ [head rpgs]) p (tail rpgs)
+placeInOrder :: M.Map Int ([Int], [Int]) -> [Int] -> Int -> [Int] -> [Int]
+placeInOrder mp lpgs p rpgs = if isOrderedMap (lpgs ++ [p] ++ rpgs) mp then lpgs ++ [p] ++ rpgs else placeInOrder mp (lpgs ++ [head rpgs]) p (tail rpgs)
 
 sumMiddles :: [[Int]] -> Int
-sumMiddles x = sum (map middle x)
+sumMiddles x = sum (map (traceVal . middle) x)
 
 getReorder :: [(Int, Int)] -> [Int] -> [Int] -> Maybe [Int]
 getReorder rs psr ps = find (`isOrdered` rs) (allPermutations [] psr)
@@ -65,9 +68,17 @@ isOrdered [x, y] rs = checkRules (x, y) rs
 isOrdered (x : ys) rs = all (\y -> checkRules (x, y) rs) ys && isOrdered ys rs
 isOrdered _ _ = True
 
+isOrderedMap :: [Int] -> M.Map Int ([Int], [Int]) -> Bool
+isOrderedMap [x, y] mp = isValid (x, y) mp
+isOrderedMap (x : ys) mp = all (\y -> isValid (x, y) mp) ys && isOrderedMap ys mp
+isOrderedMap _ _ = True
+
 checkRules :: (Int, Int) -> [(Int, Int)] -> Bool
 checkRules (x, y) [(a, b)] = (x /= b) || (y /= a)
 checkRules (x, y) ((a, b) : abs) = checkRules (x, y) [(a, b)] && checkRules (x, y) abs
+
+isValid :: (Int, Int) -> M.Map Int ([Int], [Int]) -> Bool
+isValid (x, y) mp = maybe False (\mpRs -> y `notElem` fst mpRs) (M.lookup x mp)
 
 splitHalf :: [a] -> ([a], [a])
 splitHalf l = splitAt ((length l + 1) `div` 2) l
