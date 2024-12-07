@@ -29,3 +29,10 @@ executable day5
                             split,
                             containers
     default-language: GHC2021
+
+executable day6
+    main-is:          solution.hs
+    hs-source-dirs:   day6
+    build-depends:    base >=4.14 && <5,
+                            containers
+    default-language: GHC2021
