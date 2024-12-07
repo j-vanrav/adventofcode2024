@@ -7,30 +7,27 @@ import Data.Map qualified as M (Map, adjust, empty, filter, fromList, insert, lo
 import Data.Maybe (fromMaybe, isJust)
 import Debug.Trace (trace)
 
+main :: IO ()
 main = do
-  content <- readFile "./day6/sample"
+  content <- readFile "./day6/input"
   let mp = readGrid M.empty (0, 0) content
       start = findStart mp
       solution = solve mp start 'N'
-      isSolvable = solvable mp start 'N' M.empty
-  print (writeGrid $ M.toList solution, countPath solution)
-  print (isSolvable)
+      pathLength = countPath solution
+      (isSolvable, _) = solvable mp start 'N' M.empty
+      allObstructionMps = getAllObstructions solution
+      solvableObstructions = map (\m -> fst (solvable m start 'N' M.empty)) allObstructionMps
+  print pathLength
+  print (length (filter not solvableObstructions))
 
-fib n = fibs !! n
+getAllObstructions :: M.Map (Int, Int) Char -> [M.Map (Int, Int) Char]
+getAllObstructions mp = map addObs (getPossibleObstructionCoords mp)
   where
-    fibs = 0 : 1 : zipWith (+) fibs (drop 1 fibs)
+    clearX = M.mapWithKey (\_ v -> if v == 'X' then '.' else v) mp
+    addObs (x, y) = M.adjust (const '#') (x, y) clearX
 
--- grid :: (Int,Int) -> (Int,Int,Int,Int)
--- grid (x,y) = g
---   where g = fromList []
-
--- g :: M.Map (Int, Int) Char -> (Int,Int) -> Bool
--- g mp (x, y) = maybe False _fst (M.lookup (x,y) (grid mp))
-
--- grid :: M.Map (Int, Int) Char -> M.Map (Int, Int) (Bool, Bool, Bool, Bool)
--- grid mp = do
---     let n = if lookup (x, y - 1) mp then  _fst (lookup (x, y - 1) grid)
---     fromList [((x, y), (, _snd (g (x, y - 1)), _fst (g (x, y - 1)), _fst (g (x, y - 1))))]
+getPossibleObstructionCoords :: M.Map (Int, Int) Char -> [(Int, Int)]
+getPossibleObstructionCoords mp = map (\((x, y), c) -> (x, y)) (M.toList (M.filter (== 'X') mp))
 
 solve :: M.Map (Int, Int) Char -> (Int, Int) -> Char -> M.Map (Int, Int) Char
 solve mp (x, y) d =
@@ -64,14 +61,6 @@ writeGrid :: [((Int, Int), Char)] -> String
 writeGrid [((x, y), c)] = [c]
 writeGrid (((x, y), c) : ((x_, y_), c_) : rest) = [c] ++ (if x /= x_ then "\n" else []) ++ writeGrid (((x_, y_), c_) : rest)
 
-_fst (n, _, _, _) = n
-
-_snd (_, e, _, _) = e
-
-_thd (_, _, s, _) = s
-
-_frt (_, _, _, w) = w
-
 rotate 'N' = 'E'
 rotate 'E' = 'S'
 rotate 'S' = 'W'
@@ -82,10 +71,10 @@ move (x, y) 'E' = (x, y + 1)
 move (x, y) 'S' = (x + 1, y)
 move (x, y) 'W' = (x, y - 1)
 
-solnDir s 'N' = _fst s
-solnDir s 'E' = _snd s
-solnDir s 'S' = _thd s
-solnDir s 'W' = _frt s
+solnDir (n, _, _, _) 'N' = n
+solnDir (_, e, _, _) 'E' = e
+solnDir (_, _, s, _) 'S' = s
+solnDir (_, _, _, w) 'W' = w
 
 setSolnDir (n, e, s, w) 'N' b = (b, e, s, w)
 setSolnDir (n, e, s, w) 'E' b = (n, b, s, w)
@@ -97,10 +86,5 @@ solnHasD (n, e, s, w) 'E' = isJust e
 solnHasD (n, e, s, w) 'S' = isJust s
 solnHasD (n, e, s, w) 'W' = isJust w
 
-esd = (Nothing, Nothing, Nothing, Nothing)
-
 insertOrUpdateSolnDir :: M.Map (Int, Int) (Maybe Bool, Maybe Bool, Maybe Bool, Maybe Bool) -> (Int, Int) -> Char -> Maybe Bool -> M.Map (Int, Int) (Maybe Bool, Maybe Bool, Maybe Bool, Maybe Bool)
-insertOrUpdateSolnDir soln (x, y) d b = if M.member (x, y) soln then M.update (\sd -> Just $ setSolnDir sd d b) (x, y) soln else M.insert (x, y) (setSolnDir esd d b) soln
-
-traceVal :: (Show a) => a -> a
-traceVal a = trace ("Trace " ++ show a) a
+insertOrUpdateSolnDir soln (x, y) d b = if M.member (x, y) soln then M.update (\sd -> Just $ setSolnDir sd d b) (x, y) soln else M.insert (x, y) (setSolnDir (Nothing, Nothing, Nothing, Nothing) d b) soln
