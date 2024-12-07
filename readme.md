@@ -22,3 +22,7 @@ My solutions for [advent of code](https://adventofcode.com/) 2024
 | Day 3: Part 2 (disabling)        |            | NM :: N      | ? :: ?            |
 | Day 4: Part 1 (XMAS)             | ? :: ?     |              | ? :: ?            |
 | Day 4: Part 2 (X-MAS)            | ? :: ?     |              | ? :: ?            |
+| Day 5: Part 1 (order)            |            | ? :: ?       | ? :: ?            |
+| Day 5: Part 2 (reorder)          |            | ? :: ?       | ? :: ?            |
+| Day 6: Part 1 (guard)            |            | ? :: ?       | ? :: ?            |
+| Day 6: Part 2 (obstruction)      |            | ? :: ?       | ? :: ?            |
