@@ -3,6 +3,7 @@ module Main where
 import Data.Bifunctor (bimap)
 import Data.List (find, sortBy)
 import Data.List.Split (splitOn)
+import Data.Map (Map, adjust, fromList, insert, member)
 import Data.Maybe (fromMaybe)
 import Debug.Trace (trace)
 
@@ -11,13 +12,33 @@ main = do
   let (_rs, _ps) = rulesAndPages . words $ content
       (rs, ps) = (map rules _rs, map pages _ps)
   print (sumMiddles (ordered rs ps))
-  print (sumMiddles (fromMaybe [] (mapM (\uo -> getReorder rs uo []) (unordered rs ps))))
+  print (sumMiddles (mapM (\uo -> makeOrdered rs uo []) (unordered rs ps)))
 
 unordered :: [(Int, Int)] -> [[Int]] -> [[Int]]
 unordered rs = filter (\p -> not (isOrdered p rs))
 
 ordered :: [(Int, Int)] -> [[Int]] -> [[Int]]
 ordered rs = filter (`isOrdered` rs)
+
+toMap :: (Ord k) => k -> a -> Map k a
+toMap i v = fromList [(i, v)]
+
+rulesMap :: [(Int, Int)] -> Map Int ([Int], [Int]) -> Map Int ([Int], [Int])
+rulesMap [(r1, r2)] mp = do
+  let mp1 = if member r1 mp then adjust (\(l, r) -> (l, r ++ [r2])) r1 mp else insert r1 ([], [r2]) mp
+  let mp2 = if member r2 mp1 then adjust (\(l, r) -> (l ++ [r1], r)) r2 mp1 else insert r2 ([r1], []) mp1
+  mp2
+rulesMap ((r1, r2) : rs) mp = do
+  let mp1 = rulesMap [(r1, r2)] mp
+  let mp2 = rulesMap rs mp1
+  mp2
+
+makeOrdered :: [(Int, Int)] -> [Int] -> [Int] -> [Int]
+makeOrdered _ [] pgs = traceVal pgs
+makeOrdered rs pgsr pgs = makeOrdered rs (tail pgsr) (placeInOrder rs [] (head pgsr) pgs)
+
+placeInOrder :: [(Int, Int)] -> [Int] -> Int -> [Int] -> [Int]
+placeInOrder rs lpgs p rpgs = if isOrdered (lpgs ++ [p] ++ rpgs) rs then lpgs ++ [p] ++ rpgs else placeInOrder rs (lpgs ++ [head rpgs]) p (tail rpgs)
 
 sumMiddles :: [[Int]] -> Int
 sumMiddles x = sum (map middle x)
