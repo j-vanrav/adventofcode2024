@@ -26,3 +26,5 @@ My solutions for [advent of code](https://adventofcode.com/) 2024
 | Day 5: Part 2 (reorder)          |            | ? :: ?       | ? :: ?            |
 | Day 6: Part 1 (guard)            |            | ? :: ?       | ? :: ?            |
 | Day 6: Part 2 (obstruction)      |            | ? :: ?       | ? :: ?            |
+| Day 7: Part 1 (calibrate)        |            | ? :: ?       | ? :: ?            |
+| Day 7: Part 2 (concatenation)    |            | ? :: ?       | ? :: ?            |
