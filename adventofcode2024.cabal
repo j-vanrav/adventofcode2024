@@ -42,3 +42,10 @@ executable day7
     hs-source-dirs:   day7
     build-depends:    base >=4.14 && <5
     default-language: GHC2021
+
+executable day8
+    main-is:          solution.hs
+    hs-source-dirs:   day8
+    build-depends:    base >=4.14 && <5,
+                        containers
+    default-language: GHC2021
