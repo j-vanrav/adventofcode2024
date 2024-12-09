@@ -3,7 +3,6 @@ module Main where
 import Data.List (sortBy)
 import Data.Map qualified as M (Map, adjust, empty, filter, fromList, insert, lookup, mapWithKey, member, notMember, toList, update, (!))
 import Data.Set qualified as S (fromList, toList)
-import Debug.Trace (trace)
 import GHC.Base (maxInt)
 
 main :: IO ()
@@ -40,15 +39,15 @@ getGridBounds :: M.Map (Int, Int) (Char, Bool) -> (Int, Int)
 getGridBounds grid = fst $ last $ M.toList grid
 
 generateAntinodes :: String -> M.Map (Int, Int) (Char, Bool) -> (M.Map (Int, Int) (Char, Bool), M.Map (Int, Int) (Char, Bool))
-generateAntinodes gridString grid = do
-  let _frequencies = getFrequencies gridString
-      _towerss = map (getTowers grid) _frequencies
-      _antiNodes = concatMap getAntinodes _towerss
-      _bounds = getGridBounds grid
-      _harmonicAntiNodes = concatMap (getHarmonicAntinodes _bounds) _towerss
-      _gridWAntinodes = placeAntinodes grid _antiNodes
-      _gridWHarmonics = placeAntinodes grid _harmonicAntiNodes
-  (_gridWAntinodes, _gridWHarmonics)
+generateAntinodes gridString grid = (_gridWAntinodes, _gridWHarmonics)
+  where
+    _frequencies = getFrequencies gridString
+    _towerss = map (getTowers grid) _frequencies
+    _antiNodes = concatMap getAntinodes _towerss
+    _bounds = getGridBounds grid
+    _harmonicAntiNodes = concatMap (getHarmonicAntinodes _bounds) _towerss
+    _gridWAntinodes = placeAntinodes grid _antiNodes
+    _gridWHarmonics = placeAntinodes grid _harmonicAntiNodes
 
 getTowers :: M.Map (Int, Int) (Char, Bool) -> Char -> [(Int, Int)]
 getTowers grid tower = map fst (M.toList (M.filter (\cell -> fst cell == tower) grid))
