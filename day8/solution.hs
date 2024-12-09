@@ -3,11 +3,12 @@ module Main where
 import Data.List (sortBy)
 import Data.Map qualified as M (Map, adjust, empty, filter, fromList, insert, lookup, mapWithKey, member, notMember, toList, update, (!))
 import Data.Set qualified as S (fromList, toList)
+import Debug.Trace (trace)
 import GHC.Base (maxInt)
 
 main :: IO ()
 main = do
-  content <- readFile "./day8/sample"
+  content <- readFile "./day8/input"
   let _initialGrid = readToGrid M.empty (0, 0) content
       (_gridWAntinodes, _gridWHarmonics) = generateAntinodes content _initialGrid
       _part1 = countAntinodes _gridWAntinodes
@@ -74,7 +75,7 @@ getAntinodes ((a, b) : o) = concatMap (\(x, y) -> getAntinodes [(a, b), (x, y)])
 getHarmonicAntinodes :: (Int, Int) -> [(Int, Int)] -> [(Int, Int)]
 getHarmonicAntinodes bounds [] = []
 getHarmonicAntinodes (bx, by) [(a, b)] = []
-getHarmonicAntinodes (bx, by) [(a, b), (c, d)] = continueAntinodes (0, 0) (-sx, -sy) (a, b) ++ continueAntinodes (bx, by) (sx, sy) (a, b)
+getHarmonicAntinodes (bx, by) [(a, b), (c, d)] = continueAntinodes (bx, by) (-sx, -sy) (a, b) ++ continueAntinodes (bx, by) (sx, sy) (a, b)
   where
     (sx, sy) = (c - a, d - b)
 getHarmonicAntinodes bounds ((a, b) : o) = concatMap (\(x, y) -> getHarmonicAntinodes bounds [(a, b), (x, y)]) o ++ getHarmonicAntinodes bounds o
