@@ -8,13 +8,28 @@ import GHC.Base (maxInt)
 
 main :: IO ()
 main = do
-  content <- readFile "./day8/input"
+  content <- readFile "./day8/sample"
   let _initialGrid = readToGrid M.empty (0, 0) content
       (_gridWAntinodes, _gridWHarmonics) = generateAntinodes content _initialGrid
       _part1 = countAntinodes _gridWAntinodes
       _part2 = countAntinodes _gridWHarmonics
 
   print (_part1, _part2)
+  mapM_ putStrLn [writeGrid "" (M.toList _gridWHarmonics)]
+
+writeGrid :: String -> [((Int, Int), (Char, Bool))] -> String
+writeGrid s [] = s
+writeGrid s lgrid
+  | _isNextNewline = writeGrid (s ++ ['\n']) lgrid
+  | _isNextAntinode = writeGrid (s ++ ['#']) _remainder
+  | otherwise = writeGrid (s ++ [_nextChar]) _remainder
+  where
+    _next = head lgrid
+    _remainder = tail lgrid
+    _nLine = fst (fst _next)
+    _isNextNewline = _nLine > countChar '\n' s
+    _nextChar = fst (snd _next)
+    _isNextAntinode = snd (snd _next) && _nextChar == '.'
 
 readToGrid :: M.Map (Int, Int) (Char, Bool) -> (Int, Int) -> [Char] -> M.Map (Int, Int) (Char, Bool)
 readToGrid mp (x, y) [c] = M.insert (x, y) (c, False) mp
@@ -46,6 +61,9 @@ placeAntinodes grid ((x, y) : ans) = placeAntinodes (placeAntinodes grid [(x, y)
 getFrequencies :: [Char] -> [Char]
 getFrequencies input = remove '\n' $ remove '.' (S.toList . S.fromList $ input)
 
+countChar :: Char -> [Char] -> Int
+countChar c cs = length $ filter (== c) cs
+
 getAntinodes :: [(Int, Int)] -> [(Int, Int)]
 getAntinodes [] = []
 getAntinodes [_] = []
@@ -56,7 +74,7 @@ getAntinodes ((a, b) : o) = concatMap (\(x, y) -> getAntinodes [(a, b), (x, y)])
 
 getHarmonicAntinodes :: (Int, Int) -> [(Int, Int)] -> [(Int, Int)]
 getHarmonicAntinodes bounds [] = []
-getHarmonicAntinodes (bx, by) [(a, b)] = [(a, b) | a < bx && b < by]
+getHarmonicAntinodes (bx, by) [(a, b)] = []
 getHarmonicAntinodes (bx, by) [(a, b), (c, d)] = continueAntinodes (0, 0) (-sx, -sy) (a, b) ++ continueAntinodes (bx, by) (sx, sy) (a, b)
   where
     (sx, sy) = (c - a, d - b)
