@@ -53,5 +53,6 @@ executable day8
 executable day9
     main-is:          solution.hs
     hs-source-dirs:   day9
-    build-depends:    base >=4.14 && <5
+    build-depends:    base >=4.14 && <5,
+                        vector
     default-language: GHC2021
