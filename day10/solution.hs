@@ -8,7 +8,8 @@ main = do
   content <- readFile "./day10/input"
   let _grid = readToGrid M.empty (0, 0) content
       part1 = getGridScore _grid (M.toList _grid)
-  print part1
+      part2 = getRating _grid (M.toList _grid)
+  print (part1, part2)
 
 type Grid = M.Map Coord Int
 
@@ -45,6 +46,32 @@ getCellPeaks grid alreadyCounted alreadySearched start = if value == 9 then S.in
     east = if maybe False (\x -> x == value + 1) ev then getCellPeaks grid alreadyCounted (S.insert start alreadySearched) ec else S.empty
     west = if maybe False (\x -> x == value + 1) wv then getCellPeaks grid alreadyCounted (S.insert start alreadySearched) wc else S.empty
     searches = S.empty & S.union north & S.union south & S.union east & S.union west
+
+type Path = S.Set Coord
+
+getRating :: Grid -> GridList -> Int
+getRating grid [] = 0
+getRating grid (c : cs) = v + getRating grid cs
+  where
+    v = if snd c == 0 then getCellPaths grid S.empty (fst c) else 0
+
+getCellPaths :: Grid -> S.Set Coord -> Coord -> Int
+getCellPaths grid alreadySearched start = if value == 9 then 1 else searches
+  where
+    value = grid M.! start
+    nc = move start 'N'
+    sc = move start 'S'
+    ec = move start 'E'
+    wc = move start 'W'
+    nv = M.lookup nc grid
+    sv = M.lookup sc grid
+    ev = M.lookup ec grid
+    wv = M.lookup wc grid
+    north = if maybe False (\x -> x == value + 1) nv then getCellPaths grid (S.insert start alreadySearched) nc else 0
+    south = if maybe False (\x -> x == value + 1) sv then getCellPaths grid (S.insert start alreadySearched) sc else 0
+    east = if maybe False (\x -> x == value + 1) ev then getCellPaths grid (S.insert start alreadySearched) ec else 0
+    west = if maybe False (\x -> x == value + 1) wv then getCellPaths grid (S.insert start alreadySearched) wc else 0
+    searches = sum [north, south, east, west]
 
 getAdjacentCoods :: Coord -> [Coord]
 getAdjacentCoods coord = [move coord 'N', move coord 'S', move coord 'E', move coord 'W']
