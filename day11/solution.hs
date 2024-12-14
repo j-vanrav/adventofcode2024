@@ -1,29 +1,37 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module Main where
 
 import Data.Function ((&))
 import Data.List (foldl')
+import Data.Map qualified as M
 
 main = do
   content <- readFile "./day11/input"
-  let stones = parseInput content
-      part1 = length (applyN 25 expandStones stones)
-  print part1
+  let stones = toStones 1 $ parseInput content
+      part1 = countStones $ applyN 25 expandStones stones
+      part2 = countStones $ applyN 75 expandStones stones
+  print (part1, part2)
+
+type Stones = M.Map Int Int
 
 parseInput :: String -> [Int]
 parseInput s = map read $ words s
 
-expandStones :: [Int] -> [Int]
-expandStones [] = []
-expandStones [stone] =
-  if
-    | stone == 0 -> [1]
-    | even (length d) -> (\(a, b) -> toInt a : [toInt b]) (splitHalf d)
-    | otherwise -> [stone * 2024]
+expandStones :: Stones -> Stones
+expandStones = M.foldrWithKey (\k v acc -> M.unionWith (+) (expandStone v k) acc) M.empty
+
+expandStone :: Int -> Int -> Stones
+expandStone n stone
+  | stone == 0 = M.fromList [(1, n)]
+  | even (length d) = toStones n $ (\(a, b) -> toInt a : [toInt b]) (splitHalf d)
+  | otherwise = M.fromList [(stone * 2024, n)]
   where
     d = digits stone
-expandStones (s : ss) = expandStones [s] ++ expandStones ss
+
+toStones :: Int -> [Int] -> Stones
+toStones n = foldl (\acc v -> M.insertWith (+) v n acc) M.empty
+
+countStones :: Stones -> Int
+countStones = foldl' (+) 0
 
 digits :: Int -> [Int]
 digits x = map (\c -> read [c]) (show x)
